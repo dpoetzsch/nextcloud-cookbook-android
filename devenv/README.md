@@ -4,10 +4,22 @@ Everything needed to build, test and run the app on a fresh **Ubuntu 24.04** VM 
 display, plus a throwaway Nextcloud server with the Cookbook app. Requires nested virtualization
 (`/dev/kvm` present), passwordless or interactive `sudo`, ≥ 16 GB RAM recommended.
 
+## Where this lives (git)
+
+`devenv/` is committed **only on the `devenv` branch** of the fork and is never merged, so PRs
+stay clean. On a working copy it sits on disk as untracked files, ignored via the local-only
+`.git/info/exclude`. Feature branches start from `main` as usual.
+
+- Bring the files back (fresh clone): `git checkout origin/devenv -- devenv/ && git reset -q -- devenv/ && echo 'devenv/' >> .git/info/exclude`
+- Save changes to it: commit in a temporary worktree:
+  `git worktree add /tmp/devenv-wt devenv && cp -r devenv/. /tmp/devenv-wt/devenv/ && git -C /tmp/devenv-wt commit -am "..." && git -C /tmp/devenv-wt push && git worktree remove /tmp/devenv-wt`
+
 ## Rebuild from scratch
 
 ```bash
-git clone <repo> ~/nextcloud-cookbook-android && cd ~/nextcloud-cookbook-android
+git clone git@github.com:dpoetzsch/nextcloud-cookbook-android.git ~/nextcloud-cookbook-android
+cd ~/nextcloud-cookbook-android
+git checkout origin/devenv -- devenv/ && git reset -q -- devenv/ && echo 'devenv/' >> .git/info/exclude
 ./devenv/setup.sh            # JDK, Docker, Android SDK, emulator + AVD, ~/.bashrc, local.properties
 # log out and back in once (activates the kvm + docker groups)
 ./devenv/nextcloud/up.sh     # Nextcloud + Cookbook app on :8080, seeds 3 recipes
